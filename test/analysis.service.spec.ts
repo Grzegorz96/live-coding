@@ -1,4 +1,4 @@
-import { BinanceService } from 'src/binance/binance.service';
+import { AnalysisService } from 'src/analysis/analysis.service';
 import nock from 'nock';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -26,7 +26,6 @@ const mockResponse = [
 
 describe('BinanceSevice', () => {
   let service: BinanceService;
-  let configService: ConfigService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -41,13 +40,13 @@ describe('BinanceSevice', () => {
     }).compile();
 
     service = module.get<BinanceService>(BinanceService);
-    configService = module.get<ConfigService>(ConfigService);
   });
 
   it('fetches candles from Binance public API', async () => {
-    const baseUrl = configService.getOrThrow<string>('BINANCE_BASE_URL');
-
-    nock(baseUrl).get('/api/v3/klines').query(true).reply(200, mockResponse);
+    nock('https://api.binance.com')
+      .get('/api/v3/klines')
+      .query(true)
+      .reply(200, mockResponse);
 
     const candles = await service.getCandles({
       symbol: 'BTCUSDT',
