@@ -1,60 +1,51 @@
 import { AnalysisService } from 'src/analysis/analysis.service';
-import nock from 'nock';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { Test, TestingModule } from '@nestjs/testing';
+import { BinanceService } from 'src/binance/binance.service';
 
-const mockResponse = [
-  [
-    1625097600000,
-    '34000.00',
-    '35000.00',
-    '33000.00',
-    '34500.00',
-    '1000',
-    1625101200000,
-  ],
-  [
-    1625101200000,
-    '34500.00',
-    '35500.00',
-    '34000.00',
-    '35000.00',
-    '1200',
-    1625104800000,
-  ],
-];
+describe('AnalysisService', () => {
+  let analysisService: AnalysisService;
+  let mockBinanceService: BinanceService;
 
-describe('BinanceSevice', () => {
-  let service: BinanceService;
+  beforeEach(() => {
+    mockBinanceService = {
+      getCandles: jest.fn(),
+    } as unknown as BinanceService;
 
-  beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({
-          isGlobal: true,
-          envFilePath: './env',
-        }),
-      ],
-
-      providers: [BinanceService, ConfigService],
-    }).compile();
-
-    service = module.get<BinanceService>(BinanceService);
+    analysisService = new AnalysisService(mockBinanceService);
   });
 
-  it('fetches candles from Binance public API', async () => {
-    nock('https://api.binance.com')
-      .get('/api/v3/klines')
-      .query(true)
-      .reply(200, mockResponse);
+  it('corectly analyzes price changes', async () => {
+    const mockCandles = [
+      {
+        openTime: 1,
+        open: 90,
+        high: 110,
+        low: 85,
+        close: 100,
+        volume: 100,
+        closeTime: 2,
+      },
+      {
+        openTime: 2,
+        open: 110,
+        high: 130,
+        low: 100,
+        close: 120,
+        volume: 150,
+        closeTime: 3,
+      },
+    ];
 
-    const candles = await service.getCandles({
+    (mockBinanceService.getCandles as jest.Mock).mockResolvedValue(mockCandles);
+
+    const result = await analysisService.analyze({
       symbol: 'BTCUSDT',
       interval: '1h',
       limit: 10,
     });
-
-    expect(candles).toHaveLength(10);
-    expect(candles[0].close).toBe(200);
+    expect(result.startPrice).toBe(100);
+    expect(result.endPrice).toBe(100);
+    expect(result.minPrice).toBe(100);
+    expect(result.maxPrice).toBe(100);
+    expect(result.changePercent).toBe('0.00%');
   });
 });
