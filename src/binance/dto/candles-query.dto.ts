@@ -17,7 +17,7 @@ import {
   IsOptional,
 } from 'class-validator';
 
-export class QueryDto {
+export class CandlesQueryDto {
   @IsString()
   @Length(3)
   symbol: string;

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
+import { CandlesQueryDto } from './dto/candles-query.dto';
 
 export type Kline = [
   openTime: number,
@@ -30,7 +31,7 @@ export interface Candle {
 export class BinanceService {
   private baseUrl = 'https://api.binance.com/api/v3';
 
-  async getCandles(symbol: string, interval: string, limit: number) {
+  async getCandles({ symbol, interval, limit }: CandlesQueryDto) {
     const url = `${this.baseUrl}/klines?symbol=${symbol.toUpperCase()}&interval=${interval}&limit=${limit}`;
     const { data } = await axios.get<Kline[]>(url);
 
