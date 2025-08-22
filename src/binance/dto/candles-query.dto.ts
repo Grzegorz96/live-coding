@@ -1,29 +1,85 @@
-// import * as z from 'zod';
-
-// export const QuerySchema = z.object({
-//   symbol: z.string().min(3),
-//   interval: z.string().default('1h'),
-//   limit: z.coerce.number().min(10).max(1000).default(100),
-// });
-
-// export type QuerySchemaType = z.infer<typeof QuerySchema>;
 import { Type } from 'class-transformer';
 import {
   IsString,
   IsNumber,
   Min,
   Max,
-  MinLength,
   IsOptional,
+  IsIn,
 } from 'class-validator';
 
 export class CandlesQueryDto {
   @IsString()
-  @MinLength(3)
+  @IsIn(
+    [
+      'BTCUSDT',
+      'ETHUSDT',
+      'BNBUSDT',
+      'ADAUSDT',
+      'SOLUSDT',
+      'XRPUSDT',
+      'DOTUSDT',
+      'DOGEUSDT',
+      'AVAXUSDT',
+      'MATICUSDT',
+      'LINKUSDT',
+      'UNIUSDT',
+      'LTCUSDT',
+      'BCHUSDT',
+      'ATOMUSDT',
+      'FILUSDT',
+      'VETUSDT',
+      'TRXUSDT',
+      'ETCUSDT',
+      'XLMUSDT',
+      'BTCBUSD',
+      'ETHBUSD',
+      'BNBBUSD',
+      'ADABUSD',
+      'SOLBUSD',
+      'ETHBTC',
+      'BNBBTC',
+      'ADABTC',
+      'SOLBTC',
+      'XRPBTC',
+      'BNBETH',
+      'ADAETH',
+      'SOLETH',
+      'XRPETH',
+      'DOTETH',
+    ],
+    {
+      message:
+        'Symbol must be a valid cryptocurrency trading pair (e.g., BTCUSDT, ETHUSDT, etc.)',
+    },
+  )
   symbol: string;
 
   @IsOptional()
   @IsString()
+  @IsIn(
+    [
+      '1m',
+      '3m',
+      '5m',
+      '15m',
+      '30m',
+      '1h',
+      '2h',
+      '4h',
+      '6h',
+      '8h',
+      '12h',
+      '1d',
+      '3d',
+      '1w',
+      '1M',
+    ],
+    {
+      message:
+        'Interval must be one of: 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M',
+    },
+  )
   interval: string = '1h';
 
   @IsOptional()

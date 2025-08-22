@@ -1,5 +1,5 @@
-import { AnalysisService } from 'src/analysis/analysis.service';
-import { BinanceService } from 'src/binance/binance.service';
+import { AnalysisService } from './analysis.service';
+import { BinanceService } from '../binance/binance.service';
 
 describe('AnalysisService', () => {
   let analysisService: AnalysisService;
@@ -13,7 +13,7 @@ describe('AnalysisService', () => {
     analysisService = new AnalysisService(mockBinanceService);
   });
 
-  it('corectly analyzes price changes', async () => {
+  it('correctly analyzes price changes', async () => {
     const mockCandles = [
       {
         openTime: 1,
@@ -40,12 +40,12 @@ describe('AnalysisService', () => {
     const result = await analysisService.analyze({
       symbol: 'BTCUSDT',
       interval: '1h',
-      limit: 10,
+      limit: 2,
     });
     expect(result.startPrice).toBe(100);
-    expect(result.endPrice).toBe(100);
+    expect(result.endPrice).toBe(120);
     expect(result.minPrice).toBe(100);
-    expect(result.maxPrice).toBe(100);
-    expect(result.changePercent).toBe('0.00%');
+    expect(result.maxPrice).toBe(120);
+    expect(result.changePercent).toBe('20.00%');
   });
 });

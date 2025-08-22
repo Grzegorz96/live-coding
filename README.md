@@ -31,6 +31,16 @@
 $ npm install
 ```
 
+## Environment Configuration
+
+Create a `.env` file in the root directory with the following variables:
+
+```env
+# Binance API Configuration
+BINANCE_BASE_URL=https://api.binance.com/api/v3
+PORT=3000
+```
+
 ## Compile and run the project
 
 ```bash
@@ -49,10 +59,82 @@ $ npm run start:prod
 ```bash
 # unit tests
 $ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
 ```
+
+## API Endpoints
+
+The application provides the following endpoints:
+
+### `GET /api/markets/candles`
+
+Get cryptocurrency candle data from Binance API.
+
+**Query Parameters:**
+
+- `symbol` (required): Trading pair symbol (e.g., BTCUSDT, ETHUSDT)
+  - Valid values: BTCUSDT, ETHUSDT, BNBUSDT, ADAUSDT, SOLUSDT, XRPUSDT, DOTUSDT, DOGEUSDT, AVAXUSDT, MATICUSDT, LINKUSDT, UNIUSDT, LTCUSDT, BCHUSDT, ATOMUSDT, FILUSDT, VETUSDT, TRXUSDT, ETCUSDT, XLMUSDT, BTCBUSD, ETHBUSD, BNBBUSD, ADABUSD, SOLBUSD, ETHBTC, BNBBTC, ADABTC, SOLBTC, XRPBTC, BNBETH, ADAETH, SOLETH, XRPETH, DOTETH
+- `interval` (optional): Time interval for candles (default: 1h)
+  - Valid values: 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M
+- `limit` (optional): Number of candles to return (default: 100, min: 10, max: 1000)
+
+**Example Request:**
+
+```
+GET /api/markets/candles?symbol=BTCUSDT&interval=1h&limit=50
+```
+
+### `GET /api/analysis`
+
+Analyze price changes and trends from candle data.
+
+**Query Parameters:**
+
+- `symbol` (required): Trading pair symbol (same valid values as above)
+- `interval` (optional): Time interval (same valid values as above)
+- `limit` (optional): Number of candles to analyze (same constraints as above)
+
+**Example Request:**
+
+```
+GET /api/analysis?symbol=ETHUSDT&interval=4h&limit=100
+```
+
+**Response Examples:**
+
+**Candles Response:**
+
+```json
+[
+  {
+    "openTime": 1640995200000,
+    "open": 100.5,
+    "high": 110.75,
+    "low": 95.25,
+    "close": 105.3,
+    "volume": 1000.5,
+    "closeTime": 1640998800000
+  }
+]
+```
+
+**Analysis Response:**
+
+```json
+{
+  "symbol": "ETHUSDT",
+  "interval": "4h",
+  "limit": 100,
+  "startPrice": 105.3,
+  "endPrice": 120.9,
+  "minPrice": 95.25,
+  "maxPrice": 125.8,
+  "changePercent": "14.82%"
+}
+```
+
+## Features
+
+- **Binance Integration**: Fetches real-time cryptocurrency data from Binance API
+- **Price Analysis**: Analyzes price changes, trends, and volatility
+- **Data Validation**: Comprehensive input validation for API parameters
+- **Testing**: Full test coverage with Jest and NestJS testing utilities

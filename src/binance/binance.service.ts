@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import axios from 'axios';
+import { HttpService } from '@nestjs/axios';
 import { CandlesQueryDto } from './dto/candles-query.dto';
 import { ConfigService } from '@nestjs/config';
+import { firstValueFrom } from 'rxjs';
 
 export type Kline = [
   openTime: number,
@@ -32,13 +33,17 @@ export interface Candle {
 export class BinanceService {
   private baseUrl: string;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly httpService: HttpService,
+  ) {
     this.baseUrl = this.configService.getOrThrow<string>('BINANCE_BASE_URL');
   }
 
   async getCandles({ symbol, interval, limit }: CandlesQueryDto) {
     const url = `${this.baseUrl}/klines?symbol=${symbol.toUpperCase()}&interval=${interval}&limit=${limit}`;
-    const { data } = await axios.get<Kline[]>(url);
+
+    const { data } = await firstValueFrom(this.httpService.get<Kline[]>(url));
 
     const candles: Candle[] = data.map((kline) => ({
       openTime: kline[0],
