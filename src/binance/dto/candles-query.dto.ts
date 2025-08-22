@@ -13,13 +13,13 @@ import {
   IsNumber,
   Min,
   Max,
-  Length,
+  MinLength,
   IsOptional,
 } from 'class-validator';
 
 export class CandlesQueryDto {
   @IsString()
-  @Length(3)
+  @MinLength(3)
   symbol: string;
 
   @IsOptional()
