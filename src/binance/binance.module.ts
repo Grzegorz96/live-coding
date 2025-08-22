@@ -3,8 +3,8 @@ import { BinanceService } from './binance.service';
 import { BinanceController } from './binance.controller';
 
 @Module({
-  imports: [BinanceService],
   controllers: [BinanceController],
   providers: [BinanceService],
+  exports: [BinanceService],
 })
 export class BinanceModule {}
